@@ -38,7 +38,6 @@ namespace PunchClock
         private readonly string csvDelimiter;
         private readonly string loggedDateTimeFormat;
         private StreamWriter file;
-        private DateTime date = DateTime.Now;
 
         public PunchClockApplicationContext()
         {
@@ -51,6 +50,7 @@ namespace PunchClock
             clockOutIconLabel = ConfigurationManager.AppSettings["clockOutIconLabel"];
             csvHeader = ConfigurationManager.AppSettings["csvHeader"];
             csvDelimiter = ConfigurationManager.AppSettings["csvDelimiter"];
+            loggedDateTimeFormat = ConfigurationManager.AppSettings["loggedDateTimeFormat"];
             EnsureFiles();
 
             clockStateControl.Icon = ClockStateIcon;
@@ -95,7 +95,7 @@ namespace PunchClock
 
         private void WriteClockInState(ClockStateControl type)
         {
-
+            DateTime date = DateTime.Now;
             switch (type.ClockState)
             {
                 case ClockState.ClockedOut:
