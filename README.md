@@ -13,3 +13,6 @@ Features:
 If the notification icon is not displayed, after you started the program, you have to click on the error to show all hidden icons. You can drag and drop the icon from there to the visible icon area.
 
 The release zip file contains a batch file which adds the program to the windows startup folder. Unfortunately you need to execute it as an administrator. 
+
+
+[Simple Documentation](https://daniel-krueger.github.io/posts/2020/10/20/yet-another-simple-punch-clock)
