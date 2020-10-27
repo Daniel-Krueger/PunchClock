@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
+
 namespace PunchClock
 {
     public class PunchClockApplicationContext : System.Windows.Forms.ApplicationContext
@@ -16,12 +18,9 @@ namespace PunchClock
         private System.Windows.Forms.NotifyIcon ClockStateIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem exitMenuItem;
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem openFolderMenuItem;
         private System.ComponentModel.IContainer components = null;
-        
-        /// <summary>
+
         private ClockStateControl clockStateControl = new ClockStateControl()
         {
             BackgroundColor = Color.Red,
@@ -34,7 +33,7 @@ namespace PunchClock
         private readonly string clockOutCSVLabel;
         private readonly string clockInIconLabel;
         private readonly string clockOutIconLabel;
-        private readonly string csvHeader ;
+        private readonly string csvHeader;
         private readonly string csvDelimiter;
         private readonly string loggedDateTimeFormat;
         private StreamWriter file;
@@ -58,21 +57,18 @@ namespace PunchClock
             UpdateIcon(clockStateControl);
 
         }
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ClockStateIcon = new System.Windows.Forms.NotifyIcon(this.components);
 
             // 
             // contextMenu
             // 
-            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.openFolderMenuItem,
             this.exitMenuItem});
             this.contextMenu.Name = "contextMenu";
             this.contextMenu.Size = new System.Drawing.Size(121, 26);
@@ -81,10 +77,17 @@ namespace PunchClock
             // 
             this.exitMenuItem.Name = "exitMenuItem";
             this.exitMenuItem.Size = new System.Drawing.Size(120, 22);
-            this.exitMenuItem.Text = "Exit";
+            this.exitMenuItem.Text= ConfigurationManager.AppSettings.Get("exitMenu");
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
-            // AdultNotifyIcon
+            // exitMenuItem
+            // 
+            this.openFolderMenuItem.Name = "openFolderMenuItem";
+            this.openFolderMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.openFolderMenuItem.Text = ConfigurationManager.AppSettings.Get("openFolderMenu");
+            this.openFolderMenuItem.Click += new System.EventHandler(this.openFolderMenuItem_Click);
+            // 
+            // ClockStateIcon
             // 
             this.ClockStateIcon.ContextMenuStrip = this.contextMenu;
             this.ClockStateIcon.Visible = true;
@@ -107,7 +110,7 @@ namespace PunchClock
                 default:
                     break;
             }
-            string textToWrite = string.Concat((type.ClockState == ClockState.ClockedIn ? clockInCSVLabel : clockOutCSVLabel), csvDelimiter, date.ToString(loggedDateTimeFormat),csvDelimiter);
+            string textToWrite = string.Concat((type.ClockState == ClockState.ClockedIn ? clockInCSVLabel : clockOutCSVLabel), csvDelimiter, date.ToString(loggedDateTimeFormat), csvDelimiter);
             WriteToFile(file, textToWrite, ClockState.ClockedIn == type.ClockState);
             UpdateIcon(type);
         }
@@ -185,6 +188,25 @@ namespace PunchClock
             Program.Quit();
         }
 
+        private void openFolderMenuItem_Click(object sender, EventArgs e)
+        {
+
+            if (Directory.Exists(this.csvFolderPath))
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    Arguments = this.csvFolderPath,
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
+            else
+            {
+                MessageBox.Show(string.Format("{0} Directory does not exist!", this.csvFolderPath));
+            }
+        }
+
         private void EnsureFiles()
         {
             DirectoryInfo csvFolder;
@@ -216,6 +238,8 @@ namespace PunchClock
             file.Flush();
         }
 
+
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
