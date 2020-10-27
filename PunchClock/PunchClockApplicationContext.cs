@@ -80,7 +80,7 @@ namespace PunchClock
             this.exitMenuItem.Text= ConfigurationManager.AppSettings.Get("exitMenu");
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
-            // exitMenuItem
+            // openFolderMenuItem
             // 
             this.openFolderMenuItem.Name = "openFolderMenuItem";
             this.openFolderMenuItem.Size = new System.Drawing.Size(120, 22);
